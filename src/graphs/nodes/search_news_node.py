@@ -45,8 +45,8 @@ def search_news_node(
     seen_urls = set()
     seen_titles = set()
     
-    # 只保留7天内的新闻
-    cutoff_days = 7
+    # 只保留本周/当日新闻（3天）
+    cutoff_days = 3
 
     def is_similar_title(t1: str, t2: str) -> bool:
         """检查两个标题是否相似"""
@@ -80,7 +80,17 @@ def search_news_node(
             date_str = extract_date_from_text(publish_time)
         
         if not date_str:
-            return True  # 没有日期信息时暂时允许通过
+            # GDELT已用time_range="3d"过滤，这里只做额外验证
+            # 如果publish_time有日期则验证，否则默认允许
+            pub_ts = publish_time.strip() if publish_time else ""
+            if pub_ts and len(pub_ts) >= 10:
+                try:
+                    pub_date = datetime.fromtimestamp(int(pub_ts))
+                    days_diff = (datetime.now() - pub_date).days
+                    return days_diff <= cutoff_days
+                except:
+                    pass
+            return True  # 无法判断时保留（信任GDELT的time_range过滤）
         
         try:
             pub_date = datetime.strptime(date_str[:10], '%Y-%m-%d')
@@ -159,5 +169,5 @@ def search_news_node(
     
     news_list = filtered_news
 
-    logger.info(f"搜索到 {len(news_list)} 条近7天新闻")
+    logger.info(f"搜索到 {len(news_list)} 条本周/当日新闻")
     return SearchNewsOutput(news_list=news_list)

@@ -1,0 +1,14 @@
+# AI每日新闻推送 - 定时任务配置
+#
+# 安装定时任务:
+# 1. 编辑 crontab: crontab -e
+# 2. 添加以下行:
+#
+# 每天早上10点执行
+# 0 10 * * * cd /workspace/projects && /workspace/projects/.venv/bin/python /workspace/projects/scripts/scheduled_run.py >> /tmp/ai_news_cron.log 2>&1
+#
+# 每周一至周五早上10点执行
+# 0 10 * * 1-5 cd /workspace/projects && /workspace/projects/.venv/bin/python /workspace/projects/scripts/scheduled_run.py >> /tmp/ai_news_cron.log 2>&1
+#
+# 验证定时任务: crontab -l
+# 查看日志: tail -f /tmp/ai_news_cron.log

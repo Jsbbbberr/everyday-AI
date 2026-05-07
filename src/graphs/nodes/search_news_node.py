@@ -24,12 +24,13 @@ def search_news_node(
     client = SearchClient(ctx=ctx)
 
     response = client.search(
-        query="AI product launch ChatGPT Gemini AI app case study gaming application implementation",
+        query="ChatGPT Gemini Claude AI product launch case study mobile app gaming",
         search_type="web",
         count=15,
         need_url=True,
         time_range="1d",
-        need_summary=True
+        need_summary=True,
+        block_hosts="sina.com.cn,toutiao.com,163.com,qq.com,baidu.com,weibo.com,sohu.com,xinhuanet.com,eastmoney.com,ithome.com,36kr.com,zhihu.com,jd.com,taobao.com,csdn.net,juejin.cn,huawei.com,xdadevelopers.com"
     )
 
     news_list = []

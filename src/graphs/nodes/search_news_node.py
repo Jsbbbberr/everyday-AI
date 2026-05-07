@@ -24,7 +24,7 @@ def search_news_node(
     client = SearchClient(ctx=ctx)
 
     response = client.search(
-        query="AI artificial intelligence 最新新闻",
+        query="AI product launch ChatGPT Gemini AI app case study gaming application implementation",
         search_type="web",
         count=15,
         need_url=True,

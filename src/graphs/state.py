@@ -49,6 +49,7 @@ class FormatNewsOutput(BaseModel):
 class SendNotificationInput(BaseModel):
     """发送通知节点输入"""
     formatted_news: str = Field(..., description="格式化后的新闻内容")
+    news_summary: str = Field(default="", description="行业总结内容")
 
 
 class SendNotificationOutput(BaseModel):

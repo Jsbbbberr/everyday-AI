@@ -30,6 +30,11 @@ def send_notification_node(
         if not webhook_url:
             return SendNotificationOutput(send_result="❌ 未配置飞书webhook地址")
 
+        # 拼接新闻和行业总结
+        full_content = state.formatted_news
+        if state.news_summary:
+            full_content += "\n---\n\n" + state.news_summary
+
         payload = {
             "msg_type": "post",
             "content": {
@@ -38,7 +43,7 @@ def send_notification_node(
                         "title": "🤖 AI 每日新闻速递",
                         "content": [
                             [
-                                {"tag": "text", "text": state.formatted_news[:4000]}
+                                {"tag": "text", "text": full_content[:4000]}
                             ]
                         ]
                     }

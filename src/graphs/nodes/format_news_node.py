@@ -33,16 +33,8 @@ def format_news_node(
         # 优先使用中文标题
         title = news.get("title_cn", news.get("title", "无标题"))
         url = news.get("url", "")
-        source = news.get("source", news.get("site_name", ""))
-        # 优先使用中文摘要
-        description = news.get("description_cn", news.get("description", news.get("snippet", "")))
 
         formatted_lines.append(f"**{idx}. {title}**")
-        if source:
-            formatted_lines.append(f"📍 来源: {source}")
-        if description:
-            desc_text = description[:300] + "..." if len(description) > 300 else description
-            formatted_lines.append(f"📝 {desc_text}")
         if url:
             formatted_lines.append(f"🔗 [阅读原文]({url})")
         formatted_lines.append("")

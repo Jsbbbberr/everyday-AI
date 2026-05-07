@@ -51,3 +51,13 @@ class SendNotificationInput(BaseModel):
 class SendNotificationOutput(BaseModel):
     """发送通知节点输出"""
     send_result: str = Field(..., description="发送结果")
+
+
+class TranslateNewsInput(BaseModel):
+    """翻译新闻节点输入"""
+    news_list: List[dict] = Field(..., description="搜索到的新闻列表，包含标题、URL、摘要")
+
+
+class TranslateNewsOutput(BaseModel):
+    """翻译新闻节点输出"""
+    translated_news_list: List[dict] = Field(..., description="翻译后的新闻列表")

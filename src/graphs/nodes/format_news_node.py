@@ -1,7 +1,6 @@
 """
-新闻格式化节点
+新闻格式化节点 - 使用翻译后的内容
 """
-import json
 from datetime import datetime
 from langchain_core.runnables import RunnableConfig
 from langgraph.runtime import Runtime
@@ -17,7 +16,7 @@ def format_news_node(
 ) -> FormatNewsOutput:
     """
     title: 新闻格式化
-    desc: 将搜索到的新闻列表格式化为易读的Markdown格式
+    desc: 将翻译后的新闻列表格式化为易读的Markdown格式
     integrations: 
     """
     news_list = state.news_list
@@ -31,16 +30,19 @@ def format_news_node(
     ]
 
     for idx, news in enumerate(news_list, 1):
-        title = news.get("title", "无标题")
+        # 优先使用中文标题
+        title = news.get("title_cn", news.get("title", "无标题"))
         url = news.get("url", "")
-        site_name = news.get("site_name", "")
-        summary = news.get("summary", news.get("snippet", ""))
+        source = news.get("source", news.get("site_name", ""))
+        # 优先使用中文摘要
+        description = news.get("description_cn", news.get("description", news.get("snippet", "")))
 
         formatted_lines.append(f"**{idx}. {title}**")
-        if site_name:
-            formatted_lines.append(f"📍 来源: {site_name}")
-        if summary:
-            formatted_lines.append(f"📝 {summary[:200]}..." if len(summary) > 200 else f"📝 {summary}")
+        if source:
+            formatted_lines.append(f"📍 来源: {source}")
+        if description:
+            desc_text = description[:300] + "..." if len(description) > 300 else description
+            formatted_lines.append(f"📝 {desc_text}")
         if url:
             formatted_lines.append(f"🔗 [阅读原文]({url})")
         formatted_lines.append("")

@@ -1,5 +1,5 @@
 """
-行业总结节点 - 根据当日新闻生成行业洞察总结
+行业总结节点 - 针对AI和游戏行业生成洞察总结
 """
 import json
 import logging
@@ -21,40 +21,47 @@ def summary_news_node(
 ) -> SummaryNewsOutput:
     """
     title: 行业总结生成
-    desc: 根据当日新闻生成行业洞察总结
+    desc: 针对AI和游戏行业，生成每日行业现状与未来风向总结
     integrations: 大语言模型
     """
     ctx = runtime.context
     news_list = state.news_list
 
     if not news_list:
-        return SummaryNewsOutput(news_summary="今日暂无AI相关新闻。")
+        return SummaryNewsOutput(news_summary="今日暂无AI和游戏行业相关新闻。")
 
     # 构建新闻摘要用于总结
     news_text = "\n".join([
-        f"{i+1}. {item.get('title', '')}"
+        f"{i+1}. {item.get('title', item.get('title_cn', ''))}"
         for i, item in enumerate(news_list)
     ])
 
-    prompt = f"""你是一个专业的AI行业分析师。请根据以下今日AI新闻，总结当前行业状态和风向。
+    prompt = f"""你是一个专业的AI和游戏行业分析师。请根据以下今日新闻，分别总结AI行业和游戏行业的现状与未来风向。
 
 要求：
-1. 提炼2-3个最核心的趋势或动态
-2. 分析背后的原因和影响
-3. 展望未来发展方向
-4. 语言简洁专业，适合每日简报
+1. 分两部分输出：AI行业 + 游戏行业
+2. 每个行业提炼1-2个最核心的趋势或动态
+3. 分析背后的原因和影响
+4. 展望未来发展方向
+5. 语言简洁专业，适合每日简报
+6. 150-200字左右
 
-格式：一段200-300字的中文总结段落
+格式：
+**AI行业洞察：**
+[总结内容]
+
+**游戏行业洞察：**
+[总结内容]
 
 今日新闻列表：
 {news_text}
 
-请直接输出总结内容，不需要标题："""
+请直接输出总结内容："""
 
     try:
         client = LLMClient(ctx=ctx)
         messages = [
-            SystemMessage(content="你是一个专业的AI行业分析师，擅长提炼关键信息和趋势分析。"),
+            SystemMessage(content="你是一个专业的AI和游戏行业分析师，擅长提炼关键信息和趋势分析。"),
             HumanMessage(content=prompt)
         ]
         
@@ -79,9 +86,11 @@ def summary_news_node(
         
         summary = text.strip()
         
-        logger.info(f"生成行业总结成功，长度: {len(summary)}")
-        return SummaryNewsOutput(news_summary=summary)
-        
+        if not summary:
+            summary = "今日新闻内容较分散，暂无明确行业趋势。"
+
     except Exception as e:
-        logger.error(f"生成行业总结失败: {e}")
-        return SummaryNewsOutput(news_summary="今日总结生成失败，请查看详细新闻。")
+        logger.error(f"总结生成失败: {e}")
+        summary = "今日暂无AI和游戏行业相关新闻。"
+
+    return SummaryNewsOutput(news_summary=summary)

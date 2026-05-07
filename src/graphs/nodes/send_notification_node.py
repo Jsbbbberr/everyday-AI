@@ -31,9 +31,27 @@ def send_notification_node(
             return SendNotificationOutput(send_result="❌ 未配置飞书webhook地址")
 
         # 拼接新闻和行业总结
-        full_content = state.formatted_news
+        summary_block = ""
         if state.news_summary:
-            full_content += "\n---\n\n" + state.news_summary
+            summary_block = "\n---\n\n" + state.news_summary
+        
+        full_content = state.formatted_news + summary_block
+        
+        # 飞书限制每个文本块4000字符，分块发送确保总结完整
+        if len(full_content) <= 4000:
+            content_blocks = [[{"tag": "text", "text": full_content}]]
+        else:
+            # 第一个块放新闻（留500字符给总结前缀）
+            news_block = state.formatted_news[:3500]
+            # 第二个块完整放总结
+            summary_text = summary_block if summary_block else ""
+            if summary_text:
+                content_blocks = [
+                    [{"tag": "text", "text": news_block}],
+                    [{"tag": "text", "text": summary_text}]
+                ]
+            else:
+                content_blocks = [[{"tag": "text", "text": state.formatted_news[:4000]}]]
 
         payload = {
             "msg_type": "post",
@@ -41,11 +59,7 @@ def send_notification_node(
                 "post": {
                     "zh_cn": {
                         "title": "🤖 AI 每日新闻速递",
-                        "content": [
-                            [
-                                {"tag": "text", "text": full_content[:4000]}
-                            ]
-                        ]
+                        "content": content_blocks
                     }
                 }
             }

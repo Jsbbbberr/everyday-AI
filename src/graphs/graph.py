@@ -11,6 +11,7 @@ from graphs.state import (
 from graphs.nodes.search_news_node import search_news_node
 from graphs.nodes.translate_news_node import translate_news_node
 from graphs.nodes.format_news_node import format_news_node
+from graphs.nodes.summary_news_node import summary_news_node
 from graphs.nodes.send_notification_node import send_notification_node
 
 
@@ -19,12 +20,14 @@ builder = StateGraph(GlobalState, input_schema=GraphInput, output_schema=GraphOu
 builder.add_node("search_news", search_news_node)
 builder.add_node("translate_news", translate_news_node)
 builder.add_node("format_news", format_news_node)
+builder.add_node("summary_news", summary_news_node, metadata={"type": "agent", "llm_cfg": "config/summary_llm_cfg.json"})
 builder.add_node("send_notification", send_notification_node)
 
 builder.set_entry_point("search_news")
 builder.add_edge("search_news", "translate_news")
 builder.add_edge("translate_news", "format_news")
-builder.add_edge("format_news", "send_notification")
+builder.add_edge("format_news", "summary_news")
+builder.add_edge("summary_news", "send_notification")
 builder.add_edge("send_notification", END)
 
 main_graph = builder.compile()

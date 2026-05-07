@@ -1,5 +1,5 @@
 """
-AI新闻搜索节点 - 使用火山引擎搜索，确保时效性
+AI新闻搜索节点 - 使用火山引擎搜索，只抓取近3天新闻
 """
 import logging
 from datetime import datetime, timedelta
@@ -20,14 +20,14 @@ def search_news_node(
 ) -> SearchNewsOutput:
     """
     title: AI新闻搜索
-    desc: 使用火山引擎搜索AI领域最新新闻，重点关注海外产品发布和实际应用案例
+    desc: 使用火山引擎搜索AI领域最新新闻，只抓取近3天内容
     integrations: web-search
     """
     ctx = runtime.context
     client = SearchClient(ctx=ctx)
 
-    # 时间范围设置
-    time_range = "7d"  # 搜索最近7天
+    # 时间范围设置 - 3天
+    time_range = "3d"
     
     # 搜索多个不同主题
     search_queries = [
@@ -35,7 +35,7 @@ def search_news_node(
         "ChatGPT Gemini Claude更新",
         "AI游戏应用",
         "AI智能体应用",
-        "AI mobile app launch",  # 英文
+        "AI mobile app launch",
         "OpenAI Anthropic Google update",
     ]
 
@@ -43,9 +43,8 @@ def search_news_node(
     seen_urls = set()
     seen_titles = set()
     
-    # 计算截止日期（今天）
-    today = datetime.now().strftime('%Y-%m-%d')
-    cutoff_days = 7  # 只保留7天内的新闻
+    # 只保留3天内的新闻
+    cutoff_days = 3
 
     def is_similar_title(t1: str, t2: str) -> bool:
         """检查两个标题是否相似"""
@@ -55,23 +54,22 @@ def search_news_node(
         return False
 
     def is_recent_news(publish_time: str) -> bool:
-        """检查新闻是否是最近发布的"""
+        """检查新闻是否是近3天发布的"""
         if not publish_time:
-            return True  # 没有时间就保留
+            return True
         try:
-            # 尝试解析日期
             pub_date = datetime.strptime(publish_time[:10], '%Y-%m-%d')
             days_diff = (datetime.now() - pub_date).days
             return days_diff <= cutoff_days
         except:
-            return True  # 解析失败就保留
+            return True
 
     for query in search_queries:
         try:
             response = client.search(
                 query=query,
                 search_type="web",
-                count=10,
+                count=15,  # 每次多取一些
                 need_url=True,
                 time_range=time_range,
                 need_summary=True
@@ -118,8 +116,8 @@ def search_news_node(
             logger.warning(f"搜索 '{query}' 失败: {e}")
             continue
 
-    # 按时间排序
-    news_list = all_news[:10]
+    # 不限制数量，直接返回所有结果
+    news_list = all_news
 
-    logger.info(f"搜索到 {len(news_list)} 条新闻")
+    logger.info(f"搜索到 {len(news_list)} 条近3天新闻")
     return SearchNewsOutput(news_list=news_list)

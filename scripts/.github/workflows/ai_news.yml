@@ -1,0 +1,16 @@
+name: AI News Daily
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天北京时间10点（UTC 2点）
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  run-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Coze Workflow API
+        run: |
+          curl -X POST "YOUR_WORKFLOW_API_URL" \
+               -H "Content-Type: application/json" \
+               -d '{}'

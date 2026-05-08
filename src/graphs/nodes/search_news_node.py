@@ -27,18 +27,18 @@ def search_news_node(
     client = SearchClient(ctx=ctx)
 
     # 时间范围设置 - 3天
-    time_range = "3d"
+    time_range = "12h"  # 改为12小时，更及时
     
-    # 搜索多个不同主题
+    # 搜索多个不同主题，增加更实时的关键词
     search_queries = [
-        "AI产品发布 2026",
-        "ChatGPT Gemini Claude 最新",
-        "AI游戏应用案例",
-        "AI智能体 agent 最新",
-        "AI mobile app launch 2026",
-        "OpenAI Anthropic Google update",
-        "人工智能 最新动态",
-        "大模型 更新 发布",
+        "AI产品发布",
+        "ChatGPT Gemini Claude 今天",
+        "AI游戏应用",
+        "AI智能体 agent",
+        "AI mobile app",
+        "OpenAI Anthropic update",
+        "人工智能 新闻",
+        "大模型 更新",
     ]
 
     all_news = []

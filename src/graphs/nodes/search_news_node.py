@@ -27,18 +27,30 @@ def search_news_node(
     client = SearchClient(ctx=ctx)
 
     # 时间范围设置 - 3天
-    time_range = "12h"  # 改为12小时，更及时
+    time_range = "3d"
     
-    # 搜索多个不同主题，增加更实时的关键词
+    # 游戏行业AI应用为主的搜索 - 增加具体公司和技术
     search_queries = [
-        "AI产品发布",
-        "ChatGPT Gemini Claude 今天",
-        "AI游戏应用",
-        "AI智能体 agent",
-        "AI mobile app",
-        "OpenAI Anthropic update",
-        "人工智能 新闻",
-        "大模型 更新",
+        "AI game 2026",
+        "AIGC 游戏 2026",
+        "人工智能 游戏 2026",
+        "AI NPC 2026",
+        "AI animation 2026",
+        "生成式AI 游戏",
+        "游戏AI 技术",
+        "智能NPC 游戏",
+        "大模型 游戏",
+        "AI video game 2026",
+        "AI 影视 游戏",
+        "AI 动画 生成",
+        "AI 内容生成 游戏",
+        "AI 研发 效率 游戏",
+        "腾讯 网易 米哈游 AI",
+        "AI UE5 Unity 游戏",
+        "AI procedural generation game",
+        "AI character animation",
+        "游戏AI 玩法",
+        "大模型 游戏 应用",
     ]
 
     all_news = []
